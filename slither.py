@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 
 block_size = 20
 FPS_init = 10
-FPS = FPS_init
+
 
 direction = "right"
 
