@@ -6,11 +6,11 @@ pygame.init()
 
 white = (255, 255, 255)
 black = (0, 0, 0)
-red = (255, 0, 0)
+red = (255, 225, 225)
 green = (0, 155, 0)
 
-display_width = 800
-display_height = 600
+display_width = 1000
+display_height = 730
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Slither')
@@ -47,6 +47,7 @@ def snake(block_size, snakelist):
     gameDisplay.blit(head, (snakelist[-1][0], snakelist[-1][1]))
 
     for XnY in snakelist[:-1]:
+  #      gameDisplay.blit(img, XnY[0], XnY[1])
         pygame.draw.rect(gameDisplay, green, [XnY[0], XnY[1], block_size, block_size])
 
 def score(score, speed):
@@ -95,7 +96,7 @@ def gameLoop():
 
         while gameOver == True:
             #gameDisplay.fill(white)
-            message_to_screen("Abba rules!",
+            message_to_screen("Adam wins!",
                               red,
                               y_displace=-50,
                               size="large")
