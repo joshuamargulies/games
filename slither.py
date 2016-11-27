@@ -9,14 +9,15 @@ black = (0, 0, 0)
 red = (255, 225, 225)
 green = (0, 155, 0)
 
-display_width = 1000
-display_height = 730
+display_width = 800
+display_height = 600
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Slither')
 
 img = pygame.image.load('snake.png')
 apple = pygame.image.load('apple.png')
+body = pygame.image.load('snakebody.png')
 
 clock = pygame.time.Clock()
 
@@ -24,31 +25,41 @@ block_size = 20
 FPS_init = 10
 
 
-direction = "right"
+directionhead = "right"
+
 
 smallfont = pygame.font.SysFont("comicsansms", 25)
 medfont = pygame.font.SysFont("comicsansms", 50)
 largefont = pygame.font.SysFont("comicsansms", 80)
 
 
-def snake(block_size, snakelist):
-    if direction == "right":
-        head = pygame.transform.rotate(img, 270)
+def d_direction(x, y):
+    if x == -1 * block_size:
+        direction = "left"
+    elif x == 1 * block_size:
+        direction = "right"
+    elif y == -1 * block_size:
+        direction = "up"
+    else:
+        direction = "down"
+    return direction
 
-    if direction == "left":
-        head = pygame.transform.rotate(img, 90)
+rotate = {"up":0, "left":90, "down":180, "right":270}
 
-    if direction == "up":
-        head = img
-
-    if direction == "down":
-        head = pygame.transform.rotate(img, 180)
-
+def snake(snakelist):
+# head - direction comes from player
+    head = pygame.transform.rotate(img, rotate[directionhead])
     gameDisplay.blit(head, (snakelist[-1][0], snakelist[-1][1]))
 
-    for XnY in snakelist[:-1]:
-  #      gameDisplay.blit(img, XnY[0], XnY[1])
-        pygame.draw.rect(gameDisplay, green, [XnY[0], XnY[1], block_size, block_size])
+# body - direction comes from segment ahead of it
+    if len(snakelist) > 1:
+        for idx in range(0, len(snakelist) -1):
+            x = snakelist[idx + 1][0] - snakelist[idx][0]
+            y = snakelist[idx + 1][1] - snakelist[idx][1]
+            d = d_direction(x,y)
+            segment = pygame.transform.rotate(body, rotate[d])
+            gameDisplay.blit(segment, (snakelist[idx][0], snakelist[idx][1]))
+      #      pygame.draw.rect(gameDisplay, green, [XnY[0], XnY[1], block_size, block_size])
 
 def score(score, speed):
     text = smallfont.render("Score: " + str(score) + " Speed: " + str(speed), True, black)
@@ -72,7 +83,7 @@ def message_to_screen(msg, color, y_displace=0, size="small"):
 
 
 def gameLoop():
-    global direction
+    global directionhead
     gameExit = False
     gameOver = False
     FPS = FPS_init
@@ -96,7 +107,7 @@ def gameLoop():
 
         while gameOver == True:
             #gameDisplay.fill(white)
-            message_to_screen("Adam wins!",
+            message_to_screen(" ya boi wins!",
                               red,
                               y_displace=-50,
                               size="large")
@@ -118,6 +129,7 @@ def gameLoop():
                         gameOver = False
                     if event.key == pygame.K_c:
                         FPS = FPS_init
+                        direction = "right"
                         gameLoop()
 
         for event in pygame.event.get():
@@ -125,19 +137,19 @@ def gameLoop():
                 gameExit = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    direction = "left"
+                    directionhead = "left"
                     lead_x_change = -block_size
                     lead_y_change = 0
                 elif event.key == pygame.K_RIGHT:
-                    direction = "right"
+                    directionhead = "right"
                     lead_x_change = block_size
                     lead_y_change = 0
                 elif event.key == pygame.K_UP:
-                    direction = "up"
+                    directionhead = "up"
                     lead_y_change = -block_size
                     lead_x_change = 0
                 elif event.key == pygame.K_DOWN:
-                    direction = "down"
+                    directionhead = "down"
                     lead_y_change = block_size
                     lead_x_change = 0
 
@@ -158,6 +170,7 @@ def gameLoop():
         snakeHead.append(lead_y)
         snakeList.append(snakeHead)
 
+
         if len(snakeList) > snakeLength:
             del snakeList[0]
 
@@ -165,7 +178,7 @@ def gameLoop():
             if eachSegment == snakeHead:
                 gameOver = True
 
-        snake(block_size, snakeList)
+        snake(snakeList)
 
         score(snakeLength - 1, FPS)
 
@@ -186,14 +199,14 @@ def gameLoop():
                 randAppleX = round(random.randrange(0, display_width - block_size))  # /10.0)*10.0
                 randAppleY = round(random.randrange(0, display_height - block_size))  # /10.0)*10.0
                 snakeLength += 1
-                FPS += 1
+                FPS += 0
 
             elif lead_y + block_size > randAppleY and lead_y + block_size < randAppleY + AppleThickness:
 
                 randAppleX = round(random.randrange(0, display_width - block_size))  # /10.0)*10.0
                 randAppleY = round(random.randrange(0, display_height - block_size))  # /10.0)*10.0
                 snakeLength += 1
-                FPS += 1
+                FPS += 0
 
         clock.tick(FPS)
 
